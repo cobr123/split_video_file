@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+
+<input type="file" id="audioinput" accept="video/*" autocomplete="off" style="width:80%;"/>
+<video controls autoplay width="80%">
+
+    Sorry, your browser doesn't support embedded videos.
+</video>
+
+<script type="text/javascript">
+    document.getElementById("audioinput").addEventListener("change", buttonLoadAudio, false);
+
+    var audioElement = document.querySelector("video");
+
+
+    function buttonLoadAudio(evt) {
+        var audioFile = evt.target.files[0];
+        if (audioFile) {
+            var audioFilePath = URL.createObjectURL(audioFile);
+            audioElement.setAttribute("src", audioFilePath);
+        } else {
+            alert("Failed to load the audio file.");
+        }
+    }
+</script>
+
+</body>
+
+</html>
