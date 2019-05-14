@@ -7,25 +7,71 @@
 <body>
 
 <input type="file" id="audioinput" accept="video/*" autocomplete="off" style="width:80%;"/>
-<video controls autoplay width="80%">
-
+<video controls autoplay width="80%" ontimeupdate="ticker(this.currentTime);">
     Sorry, your browser doesn't support embedded videos.
 </video>
+<div id="total_time_line"
+     style="height: 50px; width: 80%; background-color: aliceblue; display: flex; align-items: center; justify-content: center;"
+     onmousedown="mouseDown();" onmouseup="mouseUp();" onmouseleave="mouseUp();" onclick="seek(event);">
+    <span id="audioticker"></span>
+</div>
+<div id="one_second_line"
+     style="height: 50px; width: 80%; background-color: aquamarine; display: flex; align-items: center; justify-content: center;"></div>
+<input type="button" id="addsplit" style="height: 50px; width: 80%;" value="Add split" onclick="addSplit();"/>
 
 <script type="text/javascript">
     document.getElementById("audioinput").addEventListener("change", buttonLoadAudio, false);
 
-    var audioElement = document.querySelector("video");
-
+    let audioElement = document.querySelector("video");
 
     function buttonLoadAudio(evt) {
-        var audioFile = evt.target.files[0];
+        let audioFile = evt.target.files[0];
         if (audioFile) {
-            var audioFilePath = URL.createObjectURL(audioFile);
+            let audioFilePath = URL.createObjectURL(audioFile);
             audioElement.setAttribute("src", audioFilePath);
         } else {
             alert("Failed to load the audio file.");
         }
+    }
+
+    function mouseUp() {
+        window.removeEventListener('mousemove', seek, true);
+    }
+
+    function mouseDown() {
+        window.addEventListener('mousemove', seek, true);
+    }
+
+    function seek(event) {
+        audioElement.currentTime = audioElement.duration / event.target.clientWidth * event.clientX;
+    }
+
+    function addSplit() {
+        alert('split on ' + timeHHMMSSmmm(audioElement.currentTime, '.'));
+    }
+
+    function ticker(cTime) {
+        document.getElementById("audioticker").innerHTML = timeHHMMSSmmm(cTime, '.');
+    }
+
+    function pad(num, size) {
+        let s = num + "";
+        while (s.length < size) {
+            s = "0" + s;
+        }
+        return s;
+    }
+
+    function timeHHMMSSmmm(time_value, decimal_separator) {
+        let tmp = parseFloat(time_value);
+        let hours = parseInt(Math.floor(tmp / 3600));
+        tmp -= (hours * 3600);
+        let minutes = parseInt(Math.floor(tmp / 60));
+        tmp -= minutes * 60;
+        let seconds = parseInt(Math.floor(tmp));
+        tmp -= seconds;
+        let milliseconds = parseInt(Math.floor(tmp * 1000));
+        return pad(hours, 2) + ":" + pad(minutes, 2) + ":" + pad(seconds, 2) + decimal_separator + pad(milliseconds, 3);
     }
 </script>
 
